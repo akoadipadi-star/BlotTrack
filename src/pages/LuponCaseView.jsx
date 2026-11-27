@@ -6,9 +6,21 @@ import {
   Calendar,
   FileText,
   Check,
+  X,
 } from 'lucide-react';
 import LuponLayout from '../components/LuponLayout';
 import './LuponCaseView.css';
+
+function parseParties(partiesString) {
+  if (!partiesString || typeof partiesString !== 'string') {
+    return ['Juan Dela Cruz', 'Pedro Santos'];
+  }
+  const parts = partiesString.split(/\s+vs\.?\s+/i);
+  if (parts.length === 2 && parts[0].trim() && parts[1].trim()) {
+    return [parts[0].trim(), parts[1].trim()];
+  }
+  return [partiesString.trim(), 'Pedro Santos'];
+}
 
 function LuponCaseView({ language = 'bikol', onLanguageChange }) {
   const { caseId } = useParams();
@@ -16,23 +28,81 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
   const passedCase = location.state?.caseItem;
 
   const [smsSent, setSmsSent] = useState(false);
+  const [previewFileName, setPreviewFileName] = useState('');
 
-  // Parse parties if passed from All Cases row, defaulting to exact Figma Case View data
-  const [complainantName, respondentName] = useMemoParties(passedCase?.parties);
+  const [complainantName, respondentName] = parseParties(passedCase?.parties);
 
-  const displayCaseCode = caseId
-    ? `Case ${caseId} • ${passedCase?.nature || 'Property Boundary Dispute'} • Purok 4`
-    : 'Case KP-2025-00842 • Property Boundary Dispute • Purok 4';
+  const sanitizedCaseId =
+    typeof caseId === 'string' && /^[a-zA-Z0-9-]+$/.test(caseId.trim())
+      ? caseId.trim()
+      : 'KP-2025-00842';
+
+  const content = {
+    bikol: {
+      reportBtn: 'Mag-report nin Problema sa System',
+      back: 'Magbalik',
+      statusBadge: 'IN MEDIATION',
+      smsSentLabel: 'Naipadara na an SMS',
+      sendSmsLabel: 'Magpadara nin SMS Reminder',
+      hearingsLabel: 'Hearings',
+      narrativeHeading: 'Naratibo',
+      complainantBadge: 'COMPLAINANT',
+      respondentBadge: 'RESPONDENT',
+      addressLabel: 'Address',
+      mobileLabel: 'Mobile',
+      reliefHeading: 'Requested Relief / Hinihinging Ayos',
+      incidentInfoHeading: 'Impormasyon kan Insidente',
+      titleField: 'Complaint title',
+      natureField: 'Nature',
+      dateFiledField: 'Date filed',
+      locationField: 'Location',
+      filedThroughField: 'Filed through',
+      evidenceHeading: 'Evidence Attached',
+      filesBadge: (count) => `${count} ${count === 1 ? 'FILE' : 'FILES'}`,
+      previewNotice: (file) => `Binubuksan an preview kan dokumento: ${file}`,
+      closePreviewLabel: 'Isara an preview',
+    },
+    en: {
+      reportBtn: 'Report a System Problem',
+      back: 'Back',
+      statusBadge: 'IN MEDIATION',
+      smsSentLabel: 'SMS Reminder Sent',
+      sendSmsLabel: 'Send SMS Reminder',
+      hearingsLabel: 'Hearings',
+      narrativeHeading: 'Narrative',
+      complainantBadge: 'COMPLAINANT',
+      respondentBadge: 'RESPONDENT',
+      addressLabel: 'Address',
+      mobileLabel: 'Mobile',
+      reliefHeading: 'Requested Relief',
+      incidentInfoHeading: 'Incident Information',
+      titleField: 'Complaint title',
+      natureField: 'Nature',
+      dateFiledField: 'Date filed',
+      locationField: 'Location',
+      filedThroughField: 'Filed through',
+      evidenceHeading: 'Evidence Attached',
+      filesBadge: (count) => `${count} ${count === 1 ? 'FILE' : 'FILES'}`,
+      previewNotice: (file) => `Opening document preview: ${file}`,
+      closePreviewLabel: 'Close preview',
+    },
+  };
+
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const displayCaseCode = `Case ${sanitizedCaseId} • ${
+    passedCase?.nature || 'Property Boundary Dispute'
+  } • Purok 4`;
 
   const incidentDetails = [
     {
-      label: 'Complaint title',
+      label: t.titleField,
       value: passedCase?.nature || 'Property Boundary Dispute',
     },
-    { label: 'Nature', value: 'Civil' },
-    { label: 'Date filed', value: 'November 1, 2025' },
-    { label: 'Location', value: 'Mabini St., Purok 4' },
-    { label: 'Filed through', value: 'Online Portal' },
+    { label: t.natureField, value: 'Civil' },
+    { label: t.dateFiledField, value: 'November 1, 2025' },
+    { label: t.locationField, value: 'Mabini St., Purok 4' },
+    { label: t.filedThroughField, value: 'Online Portal' },
   ];
 
   const evidenceFiles = [
@@ -42,6 +112,7 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
   ];
 
   const handleSendSms = () => {
+    if (smsSent) return;
     setSmsSent(true);
     setTimeout(() => setSmsSent(false), 3000);
   };
@@ -50,25 +121,21 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
     <LuponLayout
       language={language}
       onLanguageChange={onLanguageChange}
-      reportButtonLabel={
-        language === 'bikol'
-          ? 'Mag-report nin Problema sa System'
-          : 'Report a System Problem'
-      }
+      reportButtonLabel={t.reportBtn}
     >
       <div className="case-view-container">
         {/* Top Back Link */}
         <div className="case-view-back-row">
           <Link to="/lupon-cases" className="case-view-back-link">
             <ArrowLeft size={15} strokeWidth={2.2} />
-            <span>Magbalik</span>
+            <span>{t.back}</span>
           </Link>
         </div>
 
         {/* Case Header & Action Buttons */}
         <div className="case-view-header-row">
           <div className="case-view-title-block">
-            <span className="case-view-status-pill">IN MEDIATION</span>
+            <span className="case-view-status-pill">{t.statusBadge}</span>
             <h1 className="case-view-parties-title">
               <span>{complainantName}</span>{' '}
               <span className="case-view-vs">vs.</span>{' '}
@@ -81,24 +148,26 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
             <button
               type="button"
               className="case-view-sms-btn"
+              disabled={smsSent}
+              aria-live="polite"
               onClick={handleSendSms}
             >
               {smsSent ? (
                 <>
                   <Check size={15} strokeWidth={2.2} />
-                  <span>SMS Reminder Sent</span>
+                  <span>{t.smsSentLabel}</span>
                 </>
               ) : (
                 <>
                   <MessageSquareText size={15} strokeWidth={2} />
-                  <span>Send SMS Reminder</span>
+                  <span>{t.sendSmsLabel}</span>
                 </>
               )}
             </button>
 
             <Link to="/lupon-hearings" className="case-view-hearings-btn">
               <Calendar size={15} strokeWidth={2} />
-              <span>Hearings</span>
+              <span>{t.hearingsLabel}</span>
             </Link>
           </div>
         </div>
@@ -108,9 +177,12 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
           {/* Left Column */}
           <div className="case-view-left">
             {/* Naratibo */}
-            <section className="case-view-section" aria-labelledby="naratiboHeading">
+            <section
+              className="case-view-section"
+              aria-labelledby="naratiboHeading"
+            >
               <h2 id="naratiboHeading" className="case-view-section-label">
-                Naratibo
+                {t.narrativeHeading}
               </h2>
               <div className="case-view-text-box">
                 <p>
@@ -127,42 +199,48 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
             {/* Complainant & Respondent Cards */}
             <div className="case-view-parties-grid">
               {/* Complainant */}
-              <section className="party-detail-card" aria-label="Complainant">
+              <section
+                className="party-detail-card"
+                aria-label={t.complainantBadge}
+              >
                 <span className="party-role-pill is-complainant">
-                  COMPLAINANT
+                  {t.complainantBadge}
                 </span>
                 <h3 className="party-full-name">{complainantName}</h3>
 
                 <div className="party-info-rows">
                   <div className="party-info-row">
-                    <span className="party-info-label">Address</span>
+                    <span className="party-info-label">{t.addressLabel}</span>
                     <span className="party-info-value">
                       42 Mabini St., Purok 4
                     </span>
                   </div>
                   <div className="party-info-row">
-                    <span className="party-info-label">Mobile</span>
+                    <span className="party-info-label">{t.mobileLabel}</span>
                     <span className="party-info-value">0912 ••• 7821</span>
                   </div>
                 </div>
               </section>
 
               {/* Respondent */}
-              <section className="party-detail-card" aria-label="Respondent">
+              <section
+                className="party-detail-card"
+                aria-label={t.respondentBadge}
+              >
                 <span className="party-role-pill is-respondent">
-                  RESPONDENT
+                  {t.respondentBadge}
                 </span>
                 <h3 className="party-full-name">{respondentName}</h3>
 
                 <div className="party-info-rows">
                   <div className="party-info-row">
-                    <span className="party-info-label">Address</span>
+                    <span className="party-info-label">{t.addressLabel}</span>
                     <span className="party-info-value">
                       44 Mabini St., Purok 4
                     </span>
                   </div>
                   <div className="party-info-row">
-                    <span className="party-info-label">Mobile</span>
+                    <span className="party-info-label">{t.mobileLabel}</span>
                     <span className="party-info-value">0918 ••• 2934</span>
                   </div>
                 </div>
@@ -170,9 +248,12 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
             </div>
 
             {/* Requested Relief / Hinihinging Ayos */}
-            <section className="case-view-section" aria-labelledby="reliefHeading">
+            <section
+              className="case-view-section"
+              aria-labelledby="reliefHeading"
+            >
               <h2 id="reliefHeading" className="case-view-section-label">
-                Requested Relief / Hinihinging Ayos
+                {t.reliefHeading}
               </h2>
               <div className="case-view-text-box">
                 <p>
@@ -192,7 +273,7 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
               aria-labelledby="incidentInfoHeading"
             >
               <h2 id="incidentInfoHeading" className="case-side-card-title">
-                Impormasyon ng Insidente
+                {t.incidentInfoHeading}
               </h2>
 
               <dl className="incident-dl">
@@ -215,9 +296,11 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
                   id="evidenceAttachedHeading"
                   className="case-side-card-title"
                 >
-                  Evidence Attached
+                  {t.evidenceHeading}
                 </h2>
-                <span className="evidence-count-pill">3 FILES</span>
+                <span className="evidence-count-pill">
+                  {t.filesBadge(evidenceFiles.length)}
+                </span>
               </div>
 
               <ul className="attached-files-list">
@@ -225,8 +308,10 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
                   <li key={fileName}>
                     <button
                       type="button"
-                      className="attached-file-link"
-                      onClick={() => console.log('Preview file:', fileName)}
+                      className={`attached-file-link ${
+                        previewFileName === fileName ? 'is-selected' : ''
+                      }`}
+                      onClick={() => setPreviewFileName(fileName)}
                     >
                       <FileText size={14} strokeWidth={2} />
                       <span>{fileName}</span>
@@ -234,19 +319,30 @@ function LuponCaseView({ language = 'bikol', onLanguageChange }) {
                   </li>
                 ))}
               </ul>
+
+              {previewFileName && (
+                <div
+                  className="evidence-preview-notice"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span>{t.previewNotice(previewFileName)}</span>
+                  <button
+                    type="button"
+                    className="evidence-preview-close"
+                    aria-label={t.closePreviewLabel}
+                    onClick={() => setPreviewFileName('')}
+                  >
+                    <X size={13} strokeWidth={2.2} />
+                  </button>
+                </div>
+              )}
             </section>
           </aside>
         </div>
       </div>
     </LuponLayout>
   );
-}
-
-function useMemoParties(partiesString) {
-  if (!partiesString) return ['Juan Dela Cruz', 'Pedro Santos'];
-  const parts = partiesString.split(/\s+vs\.?\s+/i);
-  if (parts.length === 2) return [parts[0].trim(), parts[1].trim()];
-  return [partiesString.trim(), 'Pedro Santos'];
 }
 
 export default LuponCaseView;

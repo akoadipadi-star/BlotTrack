@@ -60,3 +60,37 @@
   cursor: not-allowed;
   transform: none;
 }
+
+.lupon-input.is-invalid,
+.lupon-select.is-invalid,
+.lupon-phone-group.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.lupon-input.is-invalid:focus,
+.lupon-select.is-invalid:focus,
+.lupon-phone-group.is-invalid:focus-within {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.lupon-register-check-row.is-invalid {
+  outline: 1px solid #dc2626;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.lupon-error-text {
+  margin-top: 5px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.lupon-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

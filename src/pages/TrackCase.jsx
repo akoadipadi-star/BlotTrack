@@ -33,14 +33,22 @@ const NAGA_BARANGAYS = [
   'Triangulo',
 ];
 
+const CASE_NUMBER_PATTERN = /^\d{4}-\d{3}-\d{3}$/;
+
 function TrackCase({ language = 'bikol' }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [barangay, setBarangay] = useState('Abella');
+  const initialBarangay = NAGA_BARANGAYS.includes(location.state?.barangay)
+    ? location.state.barangay
+    : 'Abella';
+
+  const [barangay, setBarangay] = useState(initialBarangay);
   const [caseNumber, setCaseNumber] = useState(
     location.state?.caseNumber || ''
   );
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
     bikol: {
@@ -51,7 +59,13 @@ function TrackCase({ language = 'bikol' }) {
       cardSubtitle: 'Ilaag an case number kan saimong kaso.',
       barangayLabel: 'Barangay',
       caseNumberLabel: 'Case number',
+      caseNumberPlaceholder: 'e.g. 2026-011-001',
       submitBtn: 'Isumite',
+      submittingBtn: 'Hinahanap...',
+      barangayInvalid: 'Pumili nin tamang Barangay sa lista.',
+      caseNumberRequired: 'Kinakaipuhan an Case number (e.g. 2026-011-001).',
+      caseNumberInvalid:
+        'Maglagay nin tamang format kan Case number (e.g. 2026-011-001).',
     },
     en: {
       back: 'Back',
@@ -61,18 +75,52 @@ function TrackCase({ language = 'bikol' }) {
       cardSubtitle: 'Enter the case number of your case.',
       barangayLabel: 'Barangay',
       caseNumberLabel: 'Case number',
+      caseNumberPlaceholder: 'e.g. 2026-011-001',
       submitBtn: 'Submit',
+      submittingBtn: 'Searching...',
+      barangayInvalid: 'Please select a valid Barangay from the list.',
+      caseNumberRequired: 'Case number is required (e.g. 2026-011-001).',
+      caseNumberInvalid:
+        'Enter a valid Case number format (e.g. 2026-011-001).',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const validateForm = () => {
+    const nextErrors = {};
+
+    if (!NAGA_BARANGAYS.includes(barangay)) {
+      nextErrors.barangay = t.barangayInvalid;
+    }
+
+    const trimmedCase = caseNumber.trim();
+    if (!trimmedCase) {
+      nextErrors.caseNumber = t.caseNumberRequired;
+    } else if (!CASE_NUMBER_PATTERN.test(trimmedCase)) {
+      nextErrors.caseNumber = t.caseNumberInvalid;
+    }
+
+    return nextErrors;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+    setIsSubmitting(true);
+
     navigate('/track-case/status', {
       state: {
         barangay,
-        caseNumber: caseNumber.trim() || '2026-011-001',
+        caseNumber: caseNumber.trim(),
       },
     });
   };
@@ -95,7 +143,7 @@ function TrackCase({ language = 'bikol' }) {
         </header>
 
         {/* Centered Lookup Card */}
-        <form className="track-card" onSubmit={handleSubmit}>
+        <form className="track-card" onSubmit={handleSubmit} noValidate>
           <div className="track-icon-circle" aria-hidden="true">
             <Search size={22} strokeWidth={2.1} />
           </div>
@@ -112,9 +160,20 @@ function TrackCase({ language = 'bikol' }) {
               <div className="track-select-wrapper">
                 <select
                   id="trackBarangay"
-                  className="track-select"
+                  className={`track-select ${
+                    errors.barangay ? 'is-invalid' : ''
+                  }`}
+                  aria-invalid={Boolean(errors.barangay)}
+                  aria-describedby={
+                    errors.barangay ? 'trackBarangayError' : undefined
+                  }
                   value={barangay}
-                  onChange={(e) => setBarangay(e.target.value)}
+                  onChange={(e) => {
+                    setBarangay(e.target.value);
+                    if (errors.barangay) {
+                      setErrors((prev) => ({ ...prev, barangay: undefined }));
+                    }
+                  }}
                 >
                   {NAGA_BARANGAYS.map((brgy) => (
                     <option key={brgy} value={brgy}>
@@ -129,6 +188,15 @@ function TrackCase({ language = 'bikol' }) {
                   aria-hidden="true"
                 />
               </div>
+              {errors.barangay && (
+                <p
+                  id="trackBarangayError"
+                  className="track-error-text"
+                  role="alert"
+                >
+                  {errors.barangay}
+                </p>
+              )}
             </div>
 
             {/* Case Number Input */}
@@ -139,15 +207,41 @@ function TrackCase({ language = 'bikol' }) {
               <input
                 id="trackCaseNumber"
                 type="text"
-                className="track-input"
+                maxLength={20}
+                className={`track-input ${
+                  errors.caseNumber ? 'is-invalid' : ''
+                }`}
+                placeholder={t.caseNumberPlaceholder}
+                aria-invalid={Boolean(errors.caseNumber)}
+                aria-describedby={
+                  errors.caseNumber ? 'trackCaseNumberError' : undefined
+                }
                 value={caseNumber}
-                onChange={(e) => setCaseNumber(e.target.value)}
+                onChange={(e) => {
+                  setCaseNumber(e.target.value);
+                  if (errors.caseNumber) {
+                    setErrors((prev) => ({ ...prev, caseNumber: undefined }));
+                  }
+                }}
               />
+              {errors.caseNumber && (
+                <p
+                  id="trackCaseNumberError"
+                  className="track-error-text"
+                  role="alert"
+                >
+                  {errors.caseNumber}
+                </p>
+              )}
             </div>
           </div>
 
-          <button type="submit" className="track-submit-btn">
-            {t.submitBtn}
+          <button
+            type="submit"
+            className="track-submit-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? t.submittingBtn : t.submitBtn}
           </button>
         </form>
       </div>

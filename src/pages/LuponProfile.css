@@ -202,3 +202,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+.profile-input.is-invalid,
+.profile-select.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.profile-input.is-invalid:focus,
+.profile-select.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.profile-error-text {
+  margin-top: 6px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.profile-save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

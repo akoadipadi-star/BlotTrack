@@ -28,3 +28,28 @@
 .step4-divider--bottom {
   margin: 24px 0 20px;
 }
+
+.form-input.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.form-input.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.step4-error-text {
+  margin-top: 5px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.btn-continue:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

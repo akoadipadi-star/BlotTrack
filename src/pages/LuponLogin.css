@@ -280,3 +280,57 @@
     padding: 28px 20px 24px;
   }
 }
+
+.lupon-pin-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lupon-pin-wrapper .lupon-pin-input {
+  padding-right: 38px;
+}
+
+.lupon-pin-toggle {
+  position: absolute;
+  right: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.lupon-pin-toggle:hover {
+  color: #0f2c59;
+}
+
+.lupon-input.is-invalid,
+.lupon-select.is-invalid,
+.lupon-phone-group.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.lupon-input.is-invalid:focus,
+.lupon-select.is-invalid:focus,
+.lupon-phone-group.is-invalid:focus-within {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.lupon-error-text {
+  margin-top: 5px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.lupon-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

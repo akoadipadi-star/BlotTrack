@@ -1,18 +1,21 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, Copy, AlertCircle } from 'lucide-react';
 import './LuponRegisterSubmitted.css';
 
 function buildRequestCode(barangay, position) {
   if (!barangay && !position) return 'ABB-SEC-018';
-  const brgyCode = (barangay || 'Abella')
+  const cleanedBrgy = String(barangay || 'Abella')
     .replace(/[^A-Za-z]/g, '')
     .slice(0, 3)
     .toUpperCase();
+  const brgyCode = cleanedBrgy.length === 3 ? cleanedBrgy : 'ABB';
 
+  const normalizedPos = String(position || '').toLowerCase();
   let posCode = 'SEC';
-  if (position?.toLowerCase().includes('chairman')) posCode = 'CHR';
-  else if (position?.toLowerCase().includes('pangkat')) posCode = 'PNG';
-  else if (position?.toLowerCase().includes('member')) posCode = 'MEM';
+  if (normalizedPos.includes('chairman')) posCode = 'CHR';
+  else if (normalizedPos.includes('pangkat')) posCode = 'PNG';
+  else if (normalizedPos.includes('member')) posCode = 'MEM';
 
   return `${brgyCode}-${posCode}-018`;
 }
@@ -20,6 +23,14 @@ function buildRequestCode(barangay, position) {
 function LuponRegisterSubmitted({ language = 'bikol' }) {
   const location = useLocation();
   const state = location.state || {};
+  const [copied, setCopied] = useState(false);
+
+  const hasValidRegistration =
+    Boolean(state.registeredBarangay) &&
+    Boolean(state.registeredFullName?.trim()) &&
+    Boolean(state.registeredMobile?.trim()) &&
+    Boolean(state.registeredPosition);
+
   const requestCode = buildRequestCode(
     state.registeredBarangay,
     state.registeredPosition
@@ -27,22 +38,40 @@ function LuponRegisterSubmitted({ language = 'bikol' }) {
 
   const content = {
     bikol: {
+      directAccessWarning:
+        'Mayo nin nahanap na aktibong rehistro. Nagpapahiling nin sample request number — mag-rehistro muna tanganing makakua nin opisyal na Request Number.',
+      registerLink: 'Mag-rehistro',
       title: 'Naipasa na an rehistro',
       description:
         'Ire-rebyu kan Barangay Admin an saimong kahagadan para sa account. Mapadara kami nin SMS pag aprobada na an saimong access.',
       requestLabel: 'REQUEST NUMBER',
+      copyLabel: copied ? 'Nakopya na!' : 'Kopyahon',
       backToLoginBtn: 'Magbalik sa login',
     },
     en: {
+      directAccessWarning:
+        'No active registration submission was found. Showing a sample request number — complete the registration form to receive an official Request Number.',
+      registerLink: 'Register now',
       title: 'Registration submitted',
       description:
         'The Barangay Admin will review your account request. We will send an SMS once your access has been approved.',
       requestLabel: 'REQUEST NUMBER',
+      copyLabel: copied ? 'Copied!' : 'Copy',
       backToLoginBtn: 'Back to login',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(requestCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   return (
     <main className="lupon-auth-page">
@@ -53,6 +82,19 @@ function LuponRegisterSubmitted({ language = 'bikol' }) {
         className="lupon-auth-card lupon-reg-success-card"
         aria-labelledby="regSuccessHeading"
       >
+        {/* Direct-Navigation Fallback Notice */}
+        {!hasValidRegistration && (
+          <div className="lupon-reg-warning-banner" role="status">
+            <AlertCircle size={15} strokeWidth={2.1} aria-hidden="true" />
+            <span>
+              {t.directAccessWarning}{' '}
+              <Link to="/lupon-register" className="lupon-reg-warning-link">
+                {t.registerLink}
+              </Link>
+            </span>
+          </div>
+        )}
+
         {/* Green Check Circle */}
         <div className="lupon-reg-success-circle" aria-hidden="true">
           <Check size={24} strokeWidth={2.8} />
@@ -66,7 +108,18 @@ function LuponRegisterSubmitted({ language = 'bikol' }) {
         {/* Request Number Box */}
         <div className="lupon-request-box">
           <p className="lupon-request-label">{t.requestLabel}</p>
-          <p className="lupon-request-code">{requestCode}</p>
+          <div className="lupon-request-code-row">
+            <p className="lupon-request-code">{requestCode}</p>
+            <button
+              type="button"
+              className="lupon-request-copy-btn"
+              onClick={handleCopyCode}
+              aria-label={`${t.copyLabel} ${requestCode}`}
+            >
+              <Copy size={13} strokeWidth={2.1} />
+              <span>{t.copyLabel}</span>
+            </button>
+          </div>
         </div>
 
         {/* Back to Login Button */}

@@ -96,3 +96,22 @@
     padding: 14px 16px;
   }
 }
+
+.step6-confirm-row.is-invalid {
+  outline: 1px solid #dc2626;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.step6-error-text {
+  margin-top: 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.btn-continue:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

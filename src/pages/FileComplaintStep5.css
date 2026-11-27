@@ -145,3 +145,21 @@
 .step5-divider--bottom {
   margin: 24px 0 20px;
 }
+
+.evidence-dropzone.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.step5-error-text {
+  margin-top: 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.btn-continue:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

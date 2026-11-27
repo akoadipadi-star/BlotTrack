@@ -456,3 +456,52 @@
     width: 100%;
   }
 }
+
+.members-feedback-banner {
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.members-feedback-banner.is-success {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.members-feedback-banner.is-warning {
+  background-color: #fef6ee;
+  border: 1px solid #f7d9bc;
+  color: #9a4a1c;
+}
+
+.members-empty-state {
+  padding: 28px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.members-reset-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #0f2c59;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.members-reset-btn:hover {
+  background-color: #f8fafc;
+}
