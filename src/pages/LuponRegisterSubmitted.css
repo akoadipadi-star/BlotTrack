@@ -1,0 +1,59 @@
+@import './LuponLogin.css';
+
+.lupon-reg-success-card {
+  padding: 40px 34px 36px;
+  text-align: center;
+}
+
+.lupon-reg-success-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #158051;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.lupon-reg-success-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.lupon-reg-success-desc {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.lupon-request-box {
+  margin: 22px 0;
+  background-color: #f1f5fb;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.lupon-request-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.lupon-request-code {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #0f2c59;
+}

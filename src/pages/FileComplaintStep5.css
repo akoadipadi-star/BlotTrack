@@ -1,0 +1,147 @@
+@import './FileComplaintStep4.css';
+
+.evidence-dropzone {
+  width: 100%;
+  min-height: 210px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  background-color: #fafbfd;
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.evidence-dropzone:hover,
+.evidence-dropzone.is-dragging {
+  border-color: #164e87;
+  background-color: #f3f8fe;
+}
+
+.evidence-file-input {
+  display: none;
+}
+
+.evidence-upload-icon {
+  color: #164e87;
+  margin-bottom: 12px;
+}
+
+.evidence-upload-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.35;
+}
+
+.evidence-upload-browse {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.evidence-upload-hint {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+
+/* Selected Files List */
+.evidence-file-list {
+  list-style: none;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.evidence-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.evidence-file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #164e87;
+  font-size: 0.78rem;
+  min-width: 0;
+}
+
+.evidence-file-name {
+  font-weight: 600;
+  color: #0f2c59;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidence-file-size {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.evidence-file-remove {
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.evidence-file-remove:hover {
+  background-color: #e2e8f0;
+  color: #0f2c59;
+}
+
+/* Green Privacy Banner */
+.privacy-green-banner {
+  margin-top: 18px;
+  background-color: #eef7f2;
+  border: 1px solid #d5ebdf;
+  border-radius: 10px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.privacy-green-icon {
+  color: #1e6f50;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.privacy-green-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e6f50;
+  line-height: 1.35;
+}
+
+.privacy-green-sub {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #4b6358;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.step5-divider--bottom {
+  margin: 24px 0 20px;
+}

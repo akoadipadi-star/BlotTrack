@@ -1,0 +1,207 @@
+.submitted-page {
+  flex: 1;
+  background-color: #f4f7fb;
+  padding: 24px 24px 72px;
+}
+
+.submitted-outer-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Back Link */
+.submitted-back-row {
+  margin-bottom: 10px;
+}
+
+.submitted-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #164e87;
+  transition: opacity 0.2s ease;
+}
+
+.submitted-back-link:hover {
+  opacity: 0.8;
+}
+
+/* Page Title */
+.submitted-page-title {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f2c59;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 32px;
+}
+
+/* Centered Confirmation Card */
+.submitted-card {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e6edf5;
+  box-shadow: 0 12px 32px rgba(15, 44, 89, 0.06);
+  padding: 40px 36px 36px;
+  text-align: center;
+}
+
+.submitted-check-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #158051;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+}
+
+.submitted-case-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.submitted-case-number {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0f2c59;
+  line-height: 1.2;
+  margin: 6px 0 10px;
+}
+
+.submitted-sms-note {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.submitted-sms-note strong {
+  color: #334155;
+  font-weight: 700;
+}
+
+/* Next Steps Blue Info Box */
+.submitted-next-box {
+  margin: 24px 0 28px;
+  background-color: #edf4fc;
+  border: 1px solid #dce8f8;
+  border-radius: 10px;
+  padding: 15px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+}
+
+.submitted-next-icon {
+  color: #164e87;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.submitted-next-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.submitted-next-desc {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Bottom Centered Action Buttons */
+.submitted-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.submitted-btn-secondary {
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 10px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.submitted-btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.submitted-btn-primary {
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 10px;
+  background-color: #164e87;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(22, 78, 135, 0.2);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.submitted-btn-primary:hover {
+  background-color: #0f3c6b;
+  transform: translateY(-1px);
+}
+
+/* Tablet & Mobile */
+@media (max-width: 640px) {
+  .submitted-page {
+    padding: 20px 16px 48px;
+  }
+
+  .submitted-page-title {
+    font-size: 1.45rem;
+    margin-bottom: 24px;
+  }
+
+  .submitted-card {
+    padding: 32px 20px 28px;
+  }
+
+  .submitted-case-number {
+    font-size: 1.55rem;
+  }
+
+  .submitted-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .submitted-btn-secondary,
+  .submitted-btn-primary {
+    width: 100%;
+  }
+}

@@ -1,0 +1,92 @@
+@import './FileComplaintStep1.css';
+
+.step2-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+  row-gap: 22px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.required-star {
+  color: #dc2626;
+  margin-left: 1px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: #0f2c59;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #1660a8;
+  box-shadow: 0 0 0 3px rgba(22, 96, 168, 0.12);
+}
+
+.form-helper {
+  font-size: 0.6875rem;
+  color: #8a99ad;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 14px;
+  color: #1e293b;
+  pointer-events: none;
+}
+
+.step2-divider--bottom {
+  margin: 28px 0 20px;
+}
+
+/* Tablet & Mobile */
+@media (max-width: 768px) {
+  .step2-form-grid {
+    grid-template-columns: 1fr;
+    row-gap: 18px;
+  }
+}

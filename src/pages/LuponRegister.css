@@ -1,0 +1,62 @@
+@import './LuponLogin.css';
+
+.lupon-register-card {
+  padding-top: 30px;
+}
+
+.lupon-back-login-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #164e87;
+  margin-bottom: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.lupon-back-login-link:hover {
+  opacity: 0.8;
+}
+
+.lupon-register-subtitle {
+  margin-bottom: 22px;
+}
+
+.lupon-required {
+  color: #dc2626;
+  margin-left: 1px;
+}
+
+/* Authorization Checkbox Row */
+.lupon-register-check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lupon-register-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  accent-color: #164e87;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.lupon-register-check-text {
+  font-size: 0.71rem;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.lupon-primary-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}

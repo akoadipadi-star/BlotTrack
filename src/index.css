@@ -1,6 +1,6 @@
 :root {
   --color-navy-900: #0f2c59;
-  --color-navy-800: #163b73;
+  --color-navy-800: #164e87;
   --color-navy-700: #1d4a8c;
   --color-blue-600: #2563eb;
   --color-blue-100: #e3eefb;
@@ -21,7 +21,7 @@
   --radius-md: 10px;
   --radius-pill: 9999px;
 
-  --container-max: 1160px;
+  --container-max: 1280px;
 }
 
 *,
@@ -30,6 +30,12 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -56,7 +62,7 @@ button {
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
 @media (max-width: 640px) {

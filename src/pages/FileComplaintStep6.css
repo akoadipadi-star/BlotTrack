@@ -1,0 +1,98 @@
+@import './FileComplaintStep5.css';
+
+.review-summary-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.review-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.review-summary-row:last-child {
+  border-bottom: none;
+}
+
+.review-summary-content {
+  min-width: 0;
+}
+
+.review-summary-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+
+.review-summary-detail {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.review-edit-link {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #164e87;
+  flex-shrink: 0;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.review-edit-link:hover {
+  background-color: #f1f6fd;
+  opacity: 0.85;
+}
+
+/* Confirmation Checkbox */
+.step6-confirm-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.step6-confirm-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  accent-color: #164e87;
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.step6-confirm-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.step6-divider--bottom {
+  margin: 22px 0 20px;
+}
+
+.btn-continue:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .review-summary-row {
+    padding: 14px 16px;
+  }
+}

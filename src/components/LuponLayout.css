@@ -1,0 +1,398 @@
+.lupon-workspace {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f7fb;
+  color: #0f2c59;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+}
+
+.lupon-workspace.is-large-text {
+  font-size: 108%;
+}
+
+.lupon-workspace.is-high-contrast {
+  filter: contrast(1.08);
+}
+
+/* =========================================================
+   Top Workspace Header
+   ========================================================= */
+.lupon-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 70px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e6edf5;
+  padding: 0 28px 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lupon-topbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.lupon-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lupon-brand-seal {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.lupon-brand-seal-fallback {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #0e335e;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+}
+
+.lupon-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.lupon-brand-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.2;
+}
+
+.lupon-brand-sub {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.lupon-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Language Segmented Toggle */
+.lupon-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 3px;
+}
+
+.lupon-lang-btn {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.lupon-lang-btn.is-active {
+  background-color: #ffffff;
+  color: #164e87;
+  box-shadow: 0 1px 3px rgba(15, 44, 89, 0.08);
+}
+
+/* Accessibility Pills */
+.lupon-a11y-btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.lupon-a11y-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.lupon-a11y-btn.is-active {
+  background-color: #e6f0fa;
+  border-color: #93c5fd;
+  color: #164e87;
+}
+
+.lupon-a11y-aa {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #164e87;
+}
+
+.lupon-topbar-divider {
+  width: 1px;
+  height: 28px;
+  background-color: #e2e8f0;
+  margin: 0 4px;
+}
+
+/* User Chip */
+.lupon-user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lupon-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #dce8f8;
+  color: #164e87;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lupon-user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.lupon-user-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.25;
+}
+
+.lupon-user-role {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.25;
+}
+
+/* =========================================================
+   Body Layout: Left Navy Sidebar + Main Content
+   ========================================================= */
+.lupon-body {
+  flex: 1;
+  display: flex;
+  min-height: calc(100vh - 70px);
+}
+
+.lupon-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background-color: #0e335e;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 12px 18px;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+}
+
+.lupon-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lupon-nav-item {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #cbd8e8;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lupon-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.lupon-nav-item.is-active {
+  background-color: #1c5393;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.lupon-nav-item-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.lupon-nav-badge {
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Expandable Settings Sub-navigation */
+.lupon-nav-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.lupon-nav-item--parent {
+  width: 100%;
+  text-align: left;
+}
+
+.lupon-subnav {
+  margin-top: 6px;
+  margin-left: 16px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lupon-subnav-item {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #b8c9de;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lupon-subnav-item:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+.lupon-subnav-item.is-active {
+  background-color: #29598d;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Sidebar Footer */
+.lupon-sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 14px;
+}
+
+.lupon-signout-btn {
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #cbd8e8;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lupon-signout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* Main Content Area */
+.lupon-workspace-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px 104px;
+}
+
+/* Floating Bottom-Right Help Pill */
+.lupon-floating-report-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 22px;
+  z-index: 45;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  background-color: #163d6b;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 22px rgba(14, 51, 94, 0.28);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.lupon-floating-report-btn:hover {
+  background-color: #0e335e;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .lupon-topbar {
+    height: auto;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .lupon-body {
+    flex-direction: column;
+  }
+
+  .lupon-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    padding: 12px;
+  }
+
+  .lupon-workspace-main {
+    padding: 20px 16px 96px;
+  }
+}

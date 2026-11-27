@@ -1,9 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar({ language, onLanguageChange }) {
   const location = useLocation();
+  const isLuponAuth =
+    location.pathname.startsWith('/lupon-login') ||
+    location.pathname.startsWith('/lupon-register') ||
+    location.pathname.startsWith('/lupon-forgot-password');
+
+  const isResidentSection =
+    location.pathname === '/' ||
+    location.pathname.startsWith('/file-complaint') ||
+    location.pathname.startsWith('/track-case');
 
   return (
     <header className="navbar">
@@ -25,9 +34,9 @@ function Navbar({ language, onLanguageChange }) {
         <div className="navbar-actions">
           <Link
             to="/"
-            className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}
+            className={`navbar-link ${isResidentSection ? 'active' : ''}`}
           >
-            {language === 'bikol' ? 'Home' : 'Home'}
+            Home
           </Link>
 
           {/* Language Switcher Pill */}
@@ -48,9 +57,16 @@ function Navbar({ language, onLanguageChange }) {
             </button>
           </div>
 
-          <Link to="/lupon-login" className="portal-btn">
-            Lupon Portal
-          </Link>
+          {isLuponAuth ? (
+            <Link to="/" className="resident-portal-link">
+              <ArrowLeft size={14} strokeWidth={2.2} />
+              <span>Resident Portal</span>
+            </Link>
+          ) : (
+            <Link to="/lupon-login" className="portal-btn">
+              Lupon Portal
+            </Link>
+          )}
         </div>
       </div>
     </header>

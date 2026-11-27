@@ -1,0 +1,199 @@
+.track-page {
+  flex: 1;
+  background-color: #f4f7fb;
+  padding: 24px 24px 72px;
+}
+
+.track-outer-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Back Link */
+.track-back-row {
+  margin-bottom: 10px;
+}
+
+.track-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #164e87;
+  transition: opacity 0.2s ease;
+}
+
+.track-back-link:hover {
+  opacity: 0.8;
+}
+
+/* Page Header */
+.track-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.track-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f2c59;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.track-page-subtitle {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+/* Centered Lookup Card */
+.track-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e6edf5;
+  box-shadow: 0 12px 32px rgba(15, 44, 89, 0.06);
+  padding: 36px 32px 32px;
+}
+
+.track-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #dce8f8;
+  color: #164e87;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.track-card-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.track-card-subtitle {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.45;
+  margin-bottom: 24px;
+}
+
+/* Form Fields */
+.track-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.track-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.track-required {
+  color: #dc2626;
+  margin-left: 1px;
+}
+
+.track-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.track-select,
+.track-input {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: #0f2c59;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.track-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.track-select:focus,
+.track-input:focus {
+  outline: none;
+  border-color: #1660a8;
+  box-shadow: 0 0 0 3px rgba(22, 96, 168, 0.12);
+}
+
+.track-select-chevron {
+  position: absolute;
+  right: 14px;
+  color: #1e293b;
+  pointer-events: none;
+}
+
+/* Full-width Submit Button */
+.track-submit-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 24px;
+  border-radius: 10px;
+  background-color: #164e87;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(22, 78, 135, 0.2);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.track-submit-btn:hover {
+  background-color: #0f3c6b;
+  transform: translateY(-1px);
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .track-page {
+    padding: 20px 16px 48px;
+  }
+
+  .track-page-title {
+    font-size: 1.45rem;
+  }
+
+  .track-card {
+    padding: 28px 20px 24px;
+  }
+}

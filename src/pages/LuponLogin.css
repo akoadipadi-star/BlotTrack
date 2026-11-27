@@ -1,0 +1,282 @@
+.lupon-auth-page {
+  flex: 1;
+  min-height: calc(100vh - 70px);
+  background: radial-gradient(
+    circle at 50% 48%,
+    #e6effa 0%,
+    #eff5fc 36%,
+    #f6f9fd 70%,
+    #f8fafc 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lupon-auth-halo {
+  position: absolute;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(211, 228, 249, 0.55) 0%,
+    rgba(211, 228, 249, 0.25) 55%,
+    rgba(211, 228, 249, 0) 75%
+  );
+  pointer-events: none;
+}
+
+.lupon-auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e6edf5;
+  box-shadow: 0 14px 36px rgba(15, 44, 89, 0.06);
+  padding: 36px 34px 32px;
+}
+
+.lupon-auth-eyebrow {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #164e87;
+  margin-bottom: 4px;
+}
+
+.lupon-auth-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #0f2c59;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.lupon-auth-subtitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.45;
+  margin-bottom: 24px;
+}
+
+.lupon-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lupon-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.lupon-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 7px;
+}
+
+/* Select */
+.lupon-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lupon-select,
+.lupon-input {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: #0f2c59;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lupon-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.lupon-select:focus,
+.lupon-input:focus {
+  outline: none;
+  border-color: #1660a8;
+  box-shadow: 0 0 0 3px rgba(22, 96, 168, 0.12);
+}
+
+.lupon-select-chevron {
+  position: absolute;
+  right: 14px;
+  color: #1e293b;
+  pointer-events: none;
+}
+
+/* Split Phone Input (+63 | 9XX XXX XXXX) */
+.lupon-phone-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lupon-phone-group:focus-within {
+  border-color: #1660a8;
+  box-shadow: 0 0 0 3px rgba(22, 96, 168, 0.12);
+}
+
+.lupon-phone-prefix {
+  width: 54px;
+  background-color: #f4f7fb;
+  border-right: 1px solid #dce4ee;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lupon-phone-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: #0f2c59;
+  min-width: 0;
+}
+
+.lupon-phone-input:focus {
+  outline: none;
+}
+
+.lupon-phone-input::placeholder,
+.lupon-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Primary Submit Button */
+.lupon-primary-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  border-radius: 8px;
+  background-color: #164e87;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(22, 78, 135, 0.2);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.lupon-primary-btn:hover {
+  background-color: #0f3c6b;
+  transform: translateY(-1px);
+}
+
+/* Forgot Link */
+.lupon-forgot-row {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.lupon-forgot-link {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #164e87;
+  transition: opacity 0.2s ease;
+}
+
+.lupon-forgot-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Divider ("Bagong user?") */
+.lupon-divider-row {
+  position: relative;
+  text-align: center;
+  margin: 20px 0 16px;
+}
+
+.lupon-divider-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background-color: #edf2f7;
+}
+
+.lupon-divider-text {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  padding: 0 12px;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+/* Secondary Register Button */
+.lupon-secondary-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #dce4ee;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.lupon-secondary-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .lupon-auth-page {
+    padding: 24px 16px;
+  }
+
+  .lupon-auth-card {
+    padding: 28px 20px 24px;
+  }
+}
