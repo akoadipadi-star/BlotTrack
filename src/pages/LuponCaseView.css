@@ -336,3 +336,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+.case-view-sms-btn:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
+
+.attached-file-link.is-selected {
+  background-color: #eef5fc;
+  color: #0f3c6b;
+  font-weight: 600;
+}
+
+.evidence-preview-notice {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: #f1f6fc;
+  border: 1px solid #dbe7f5;
+  color: #164e87;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.evidence-preview-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #476487;
+  cursor: pointer;
+}

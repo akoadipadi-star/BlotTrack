@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, Phone, Check, X, Search } from 'lucide-react';
+import { Bell, Phone, Check, X, Search, AlertCircle } from 'lucide-react';
 import LuponLayout from '../components/LuponLayout';
 import './LuponMembers.css';
 
@@ -75,16 +75,127 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
   const [members, setMembers] = useState(INITIAL_MEMBERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [statusBanner, setStatusBanner] = useState(null);
+
+  const content = {
+    bikol: {
+      reportBtn: 'Mag-report nin Problema sa System',
+      eyebrow: 'MARTES, NOBYEMBRE 3, 2026',
+      pageTitle: 'Lupon Tagapamayapa',
+      pageSubtitle:
+        'I-manage an access, availability, asin mediation assignments kan mga miyembro.',
+      pendingHeading: 'Mga Naghahalat nin Pag-apruba',
+      pendingSub:
+        'I-verify muna bago tawan nin access sa confidential KP cases.',
+      colFullName: 'FULL NAME',
+      colMobile: 'MOBILE NUMBER',
+      colZone: 'PUROK / ZONE',
+      colDateReg: 'DATE REGISTERED',
+      colRole: 'ASSIGNED ROLE',
+      colActions: 'ACTIONS',
+      approveBtn: 'Aprubahan',
+      rejectBtn: 'Tanggihan',
+      directoryHeading: 'Listahan kan mga Aktibong Miyembro',
+      registeredCount: (count) => `${count} nakarehistrong Lupon members`,
+      searchPlaceholder: 'Hanapon an pangaran, purok, o mobile...',
+      filterAll: 'Lahat / All',
+      filterActive: 'Aktibo / Active',
+      filterInactive: 'Naka-leave / Inactive',
+      colMember: 'MEMBER',
+      colAddress: 'ADDRESS',
+      colActiveCases: 'ACTIVE KP CASES',
+      colStatus: 'STATUS',
+      assignedCaseSingle: 'assigned case',
+      assignedCasePlural: 'assigned cases',
+      statusActive: 'Aktibo',
+      statusInactive: 'Hindi Aktibo',
+      emptySearch: 'Mayo nin nahanap na miyembro para sa piniling filter.',
+      resetFilters: 'I-reset an filter',
+      approvedNotice: (name) =>
+        `Naaprubahan na si ${name} asin naidagdag sa aktibong lista.`,
+      duplicateNotice: (name) =>
+        `Nasa lista na kan mga miyembro si ${name}.`,
+      rejectedNotice: (name) =>
+        `Tinanggihan an aplikasyon ni ${name}.`,
+      activeCasesWarning: (name, count) =>
+        `Dai pwedeng i-deactivate si ${name} mantang igwa pa nin ${count} aktibong KP ${count === 1 ? 'kaso' : 'kaso'}. I-reassign muna an kaso.`,
+      statusUpdatedNotice: (name, isNowActive) =>
+        `Na-update an status ni ${name} sa ${isNowActive ? 'Aktibo' : 'Hindi Aktibo'}.`,
+    },
+    en: {
+      reportBtn: 'Report a System Problem',
+      eyebrow: 'TUESDAY, NOVEMBER 3, 2026',
+      pageTitle: 'Lupon Tagapamayapa',
+      pageSubtitle:
+        'Manage member access, availability, and mediation assignments.',
+      pendingHeading: 'Pending Approvals',
+      pendingSub:
+        'Verify identity before granting access to confidential KP cases.',
+      colFullName: 'FULL NAME',
+      colMobile: 'MOBILE NUMBER',
+      colZone: 'PUROK / ZONE',
+      colDateReg: 'DATE REGISTERED',
+      colRole: 'ASSIGNED ROLE',
+      colActions: 'ACTIONS',
+      approveBtn: 'Approve',
+      rejectBtn: 'Reject',
+      directoryHeading: 'Active Members Directory',
+      registeredCount: (count) => `${count} registered Lupon members`,
+      searchPlaceholder: 'Search name, purok, or mobile...',
+      filterAll: 'All',
+      filterActive: 'Active',
+      filterInactive: 'On Leave / Inactive',
+      colMember: 'MEMBER',
+      colAddress: 'ADDRESS',
+      colActiveCases: 'ACTIVE KP CASES',
+      colStatus: 'STATUS',
+      assignedCaseSingle: 'assigned case',
+      assignedCasePlural: 'assigned cases',
+      statusActive: 'Active',
+      statusInactive: 'Inactive',
+      emptySearch: 'No Lupon members match the current search or filter.',
+      resetFilters: 'Reset filters',
+      approvedNotice: (name) =>
+        `${name} has been approved and added to the active directory.`,
+      duplicateNotice: (name) =>
+        `${name} is already registered in the members directory.`,
+      rejectedNotice: (name) =>
+        `Registration request for ${name} has been declined.`,
+      activeCasesWarning: (name, count) =>
+        `Cannot set ${name} to Inactive while assigned to ${count} active KP ${count === 1 ? 'case' : 'cases'}. Reassign cases first.`,
+      statusUpdatedNotice: (name, isNowActive) =>
+        `Updated ${name}'s status to ${isNowActive ? 'Active' : 'Inactive'}.`,
+    },
+  };
+
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const showBanner = (type, text) => {
+    setStatusBanner({ type, text });
+    setTimeout(() => {
+      setStatusBanner((prev) => (prev?.text === text ? null : prev));
+    }, 3500);
+  };
 
   const handleApprove = (pendingItem) => {
+    const alreadyExists = members.some(
+      (m) => m.name.toLowerCase() === pendingItem.fullName.trim().toLowerCase()
+    );
+
     setPendingMembers((prev) =>
       prev.filter((item) => item.id !== pendingItem.id)
     );
+
+    if (alreadyExists) {
+      showBanner('warning', t.duplicateNotice(pendingItem.fullName));
+      return;
+    }
+
     setMembers((prev) => [
       ...prev,
       {
         id: `approved-${pendingItem.id}`,
-        name: pendingItem.fullName,
+        name: pendingItem.fullName.trim(),
         role: pendingItem.role,
         address: pendingItem.zone,
         mobile: pendingItem.mobile,
@@ -92,16 +203,32 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
         isActive: true,
       },
     ]);
+    showBanner('success', t.approvedNotice(pendingItem.fullName));
   };
 
-  const handleReject = (id) => {
-    setPendingMembers((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleToggleStatus = (id) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, isActive: !m.isActive } : m))
+  const handleReject = (pendingItem) => {
+    setPendingMembers((prev) =>
+      prev.filter((item) => item.id !== pendingItem.id)
     );
+    showBanner('success', t.rejectedNotice(pendingItem.fullName));
+  };
+
+  const handleToggleStatus = (member) => {
+    if (member.isActive && member.assignedCases > 0) {
+      showBanner(
+        'warning',
+        t.activeCasesWarning(member.name, member.assignedCases)
+      );
+      return;
+    }
+
+    const nextActive = !member.isActive;
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === member.id ? { ...m, isActive: nextActive } : m
+      )
+    );
+    showBanner('success', t.statusUpdatedNotice(member.name, nextActive));
   };
 
   const filteredMembers = useMemo(() => {
@@ -110,10 +237,11 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
       if (statusFilter === 'inactive' && member.isActive) return false;
 
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
+        const q = searchQuery.trim().toLowerCase();
         const matchName = member.name.toLowerCase().includes(q);
         const matchZone = member.address.toLowerCase().includes(q);
-        if (!matchName && !matchZone) return false;
+        const matchMobile = member.mobile.toLowerCase().includes(q);
+        if (!matchName && !matchZone && !matchMobile) return false;
       }
 
       return true;
@@ -124,22 +252,31 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
     <LuponLayout
       language={language}
       onLanguageChange={onLanguageChange}
-      reportButtonLabel={
-        language === 'bikol'
-          ? 'Mag-report nin Problema sa System'
-          : 'Report a System Problem'
-      }
+      reportButtonLabel={t.reportBtn}
     >
       <div className="lupon-members-container">
         {/* Top Date & Page Heading */}
         <header className="lupon-members-header">
-          <p className="lupon-members-eyebrow">MARTES, NOBYEMBRE 3, 2026</p>
-          <h1 className="lupon-members-title">Lupon Tagapamayapa</h1>
-          <p className="lupon-members-subtitle">
-            I-manage an access, availability, asin mediation assignments kan mga
-            miyembro.
-          </p>
+          <p className="lupon-members-eyebrow">{t.eyebrow}</p>
+          <h1 className="lupon-members-title">{t.pageTitle}</h1>
+          <p className="lupon-members-subtitle">{t.pageSubtitle}</p>
         </header>
+
+        {/* Action / Validation Feedback Banner */}
+        {statusBanner && (
+          <div
+            className={`members-feedback-banner is-${statusBanner.type}`}
+            role="status"
+            aria-live="polite"
+          >
+            {statusBanner.type === 'warning' ? (
+              <AlertCircle size={15} strokeWidth={2.2} aria-hidden="true" />
+            ) : (
+              <Check size={15} strokeWidth={2.4} aria-hidden="true" />
+            )}
+            <span>{statusBanner.text}</span>
+          </div>
+        )}
 
         {/* Top Pending Approvals Card */}
         {pendingMembers.length > 0 && (
@@ -157,26 +294,24 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
                     id="pendingApprovalsHeading"
                     className="pending-banner-title"
                   >
-                    Mga Naghahalat nin Pag-apruba
+                    {t.pendingHeading}
                   </h2>
                   <span className="pending-banner-count">
                     {pendingMembers.length}
                   </span>
                 </div>
-                <p className="pending-banner-sub">
-                  I-verify muna bago tawan nin access sa confidential KP cases.
-                </p>
+                <p className="pending-banner-sub">{t.pendingSub}</p>
               </div>
             </div>
 
             {/* Table Column Header */}
             <div className="pending-table-head">
-              <span>FULL NAME</span>
-              <span>MOBILE NUMBER</span>
-              <span>PUROK / ZONE</span>
-              <span>DATE REGISTERED</span>
-              <span>ASSIGNED ROLE</span>
-              <span>ACTIONS</span>
+              <span>{t.colFullName}</span>
+              <span>{t.colMobile}</span>
+              <span>{t.colZone}</span>
+              <span>{t.colDateReg}</span>
+              <span>{t.colRole}</span>
+              <span>{t.colActions}</span>
             </div>
 
             {/* Pending Rows */}
@@ -207,15 +342,15 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
                       onClick={() => handleApprove(item)}
                     >
                       <Check size={13} strokeWidth={2.5} />
-                      <span>Aprubahan</span>
+                      <span>{t.approveBtn}</span>
                     </button>
                     <button
                       type="button"
                       className="btn-reject-member"
-                      onClick={() => handleReject(item.id)}
+                      onClick={() => handleReject(item)}
                     >
                       <X size={13} strokeWidth={2.3} />
-                      <span>Tanggihan</span>
+                      <span>{t.rejectBtn}</span>
                     </button>
                   </div>
                 </div>
@@ -231,10 +366,10 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
         >
           <div className="active-members-top">
             <h2 id="activeMembersHeading" className="active-members-title">
-              Listahan kan mga Aktibong Miyembro
+              {t.directoryHeading}
             </h2>
             <p className="active-members-sub">
-              {members.length} registered Lupon members
+              {t.registeredCount(members.length)}
             </p>
           </div>
 
@@ -249,8 +384,10 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
               />
               <input
                 type="text"
+                maxLength={80}
                 className="members-search-input"
-                placeholder="Hanapon an pangaran o purok..."
+                placeholder={t.searchPlaceholder}
+                aria-label={t.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -264,7 +401,7 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
                 }`}
                 onClick={() => setStatusFilter('all')}
               >
-                Lahat / All
+                {t.filterAll}
               </button>
               <button
                 type="button"
@@ -273,7 +410,7 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
                 }`}
                 onClick={() => setStatusFilter('active')}
               >
-                Aktibo / Active
+                {t.filterActive}
               </button>
               <button
                 type="button"
@@ -282,63 +419,79 @@ function LuponMembers({ language = 'bikol', onLanguageChange }) {
                 }`}
                 onClick={() => setStatusFilter('inactive')}
               >
-                Naka-leave / Inactive
+                {t.filterInactive}
               </button>
             </div>
           </div>
 
           {/* Members Table Header */}
           <div className="members-table-head">
-            <span>MEMBER</span>
-            <span>ADDRESS</span>
-            <span>MOBILE NUMBER</span>
-            <span>ACTIVE KP CASES</span>
-            <span>STATUS</span>
+            <span>{t.colMember}</span>
+            <span>{t.colAddress}</span>
+            <span>{t.colMobile}</span>
+            <span>{t.colActiveCases}</span>
+            <span>{t.colStatus}</span>
           </div>
 
           {/* Members Rows */}
           <div className="members-table-body">
-            {filteredMembers.map((member) => (
-              <div key={member.id} className="members-table-row">
-                <div>
-                  <p className="member-name-text">{member.name}</p>
-                  <p className="member-role-sub">{member.role}</p>
-                </div>
-
-                <span className="member-zone-text">{member.address}</span>
-
-                <span className="member-mobile-cell">
-                  <Phone size={13} strokeWidth={2} />
-                  <span>{member.mobile}</span>
-                </span>
-
-                <div className="member-cases-cell">
-                  <span className="member-cases-badge">
-                    {member.assignedCases}
-                  </span>
-                  <span className="member-cases-label">
-                    {member.assignedCases === 1
-                      ? 'assigned case'
-                      : 'assigned cases'}
-                  </span>
-                </div>
-
-                <div>
-                  <button
-                    type="button"
-                    className={`member-status-pill ${
-                      member.isActive ? 'is-active' : 'is-inactive'
-                    }`}
-                    onClick={() => handleToggleStatus(member.id)}
-                  >
-                    <span className="member-status-dot" aria-hidden="true" />
-                    <span>
-                      {member.isActive ? 'Aktibo' : 'Hindi Aktibo'}
-                    </span>
-                  </button>
-                </div>
+            {filteredMembers.length === 0 ? (
+              <div className="members-empty-state">
+                <p>{t.emptySearch}</p>
+                <button
+                  type="button"
+                  className="members-reset-btn"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setStatusFilter('all');
+                  }}
+                >
+                  {t.resetFilters}
+                </button>
               </div>
-            ))}
+            ) : (
+              filteredMembers.map((member) => (
+                <div key={member.id} className="members-table-row">
+                  <div>
+                    <p className="member-name-text">{member.name}</p>
+                    <p className="member-role-sub">{member.role}</p>
+                  </div>
+
+                  <span className="member-zone-text">{member.address}</span>
+
+                  <span className="member-mobile-cell">
+                    <Phone size={13} strokeWidth={2} />
+                    <span>{member.mobile}</span>
+                  </span>
+
+                  <div className="member-cases-cell">
+                    <span className="member-cases-badge">
+                      {member.assignedCases}
+                    </span>
+                    <span className="member-cases-label">
+                      {member.assignedCases === 1
+                        ? t.assignedCaseSingle
+                        : t.assignedCasePlural}
+                    </span>
+                  </div>
+
+                  <div>
+                    <button
+                      type="button"
+                      className={`member-status-pill ${
+                        member.isActive ? 'is-active' : 'is-inactive'
+                      }`}
+                      onClick={() => handleToggleStatus(member)}
+                    >
+                      <span className="member-status-dot" aria-hidden="true" />
+                      <span>
+                        {member.isActive ? t.statusActive : t.statusInactive}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </section>
       </div>

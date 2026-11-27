@@ -1,23 +1,80 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Bell, Check, Clock, Home } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bell,
+  Check,
+  Clock,
+  Home,
+  AlertCircle,
+} from 'lucide-react';
 import './TrackCaseResult.css';
+
+const CASE_NUMBER_PATTERN = /^\d{4}-\d{3}-\d{3}$/;
+
+const VALID_BARANGAYS = [
+  'Abella',
+  'Bagumbayan Norte',
+  'Bagumbayan Sur',
+  'Balatas',
+  'Calauag',
+  'Cararayan',
+  'Carolina',
+  'Concepcion Grande',
+  'Concepcion Pequeña',
+  'Dayangdang',
+  'Del Rosario',
+  'Dinaga',
+  'Igualdad Interior',
+  'Lerma',
+  'Liboton',
+  'Mabolo',
+  'Pacol',
+  'Panicuason',
+  'Peñafrancia',
+  'Sabang',
+  'San Felipe',
+  'San Francisco',
+  'San Isidro',
+  'Santa Cruz',
+  'Tabuco',
+  'Tinago',
+  'Triangulo',
+];
 
 function TrackCaseResult({ language = 'bikol' }) {
   const location = useLocation();
-  const caseNumber = location.state?.caseNumber || '2026-011-001';
-  const barangay = location.state?.barangay || 'Abella';
+  const rawCaseNumber = location.state?.caseNumber;
+  const rawBarangay = location.state?.barangay;
+
+  const hasValidRouteCase =
+    typeof rawCaseNumber === 'string' &&
+    CASE_NUMBER_PATTERN.test(rawCaseNumber.trim());
+
+  const caseNumber = hasValidRouteCase
+    ? rawCaseNumber.trim()
+    : '2026-011-001';
+
+  const barangay = VALID_BARANGAYS.includes(rawBarangay)
+    ? rawBarangay
+    : 'Abella';
 
   const [smsAlertsOn, setSmsAlertsOn] = useState(true);
+  const [smsFeedback, setSmsFeedback] = useState('');
 
   const content = {
     bikol: {
       back: 'Magbalik',
       pageTitle: 'Mag-track nin Report o Kaso',
       pageSubtitle: 'Siguraduhon na an saimong kaso sana an i-track.',
+      missingStateWarning:
+        'Mayo nin nahanap na aktibong paghanap nin kaso. Nagpapahiling nin sample record — magbalik sa paghanap tanganing ilaag an saimong Case Number.',
+      searchAgainLink: 'Maghanap nin kaso',
       statusBadge: 'IN MEDIATION',
       caseCategory: 'Collection Sum of Money',
       smsAlertsLabel: smsAlertsOn ? 'SMS alerts: On' : 'SMS alerts: Off',
+      smsEnabledNote: 'Naka-on na an SMS notifications para sa kasong ini.',
+      smsDisabledNote: 'Naka-off na an SMS notifications para sa kasong ini.',
       progressHeading: 'Progreso kan Kaso',
       steps: [
         {
@@ -52,7 +109,7 @@ function TrackCaseResult({ language = 'bikol' }) {
       hearingYear: '2026',
       hearingTitle: 'Enot na Pag-oolay',
       hearingTime: '9:00 AM – 10:00 AM',
-      hearingVenue: `${barangay}- Barangay Hall, Lupon Office`,
+      hearingVenue: `${barangay} - Barangay Hall, Lupon Office`,
       reminderText:
         'Mag-abot nin 15 minutos antes asin magdara nin sarong valid ID.',
     },
@@ -60,9 +117,14 @@ function TrackCaseResult({ language = 'bikol' }) {
       back: 'Back',
       pageTitle: 'Track a Report or Case',
       pageSubtitle: 'Make sure you only track your own case.',
+      missingStateWarning:
+        'No active case lookup was found. Showing a sample record — return to the lookup page to enter your Case Number.',
+      searchAgainLink: 'Look up a case',
       statusBadge: 'IN MEDIATION',
       caseCategory: 'Collection Sum of Money',
       smsAlertsLabel: smsAlertsOn ? 'SMS alerts: On' : 'SMS alerts: Off',
+      smsEnabledNote: 'SMS notifications are now enabled for this case.',
+      smsDisabledNote: 'SMS notifications are now turned off for this case.',
       progressHeading: 'Case Progress',
       steps: [
         {
@@ -97,13 +159,21 @@ function TrackCaseResult({ language = 'bikol' }) {
       hearingYear: '2026',
       hearingTitle: 'First Mediation Session',
       hearingTime: '9:00 AM – 10:00 AM',
-      hearingVenue: `${barangay}- Barangay Hall, Lupon Office`,
+      hearingVenue: `${barangay} - Barangay Hall, Lupon Office`,
       reminderText:
         'Arrive 15 minutes early and bring one valid ID.',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const handleToggleSms = () => {
+    setSmsAlertsOn((prev) => {
+      const next = !prev;
+      setSmsFeedback(next ? t.smsEnabledNote : t.smsDisabledNote);
+      return next;
+    });
+  };
 
   return (
     <main className="track-result-page">
@@ -122,6 +192,19 @@ function TrackCaseResult({ language = 'bikol' }) {
           <p className="track-result-subtitle">{t.pageSubtitle}</p>
         </header>
 
+        {/* Direct-Navigation Fallback Notice */}
+        {!hasValidRouteCase && (
+          <div className="track-result-warning-banner" role="status">
+            <div className="track-result-warning-left">
+              <AlertCircle size={16} strokeWidth={2.1} aria-hidden="true" />
+              <span>{t.missingStateWarning}</span>
+            </div>
+            <Link to="/track-case" className="track-result-warning-link">
+              {t.searchAgainLink}
+            </Link>
+          </div>
+        )}
+
         {/* Top Case Summary Banner Card */}
         <section className="case-summary-card" aria-label="Case Summary">
           <div className="case-summary-left">
@@ -130,15 +213,22 @@ function TrackCaseResult({ language = 'bikol' }) {
             <p className="case-category-text">{t.caseCategory}</p>
           </div>
 
-          <button
-            type="button"
-            className="sms-alerts-btn"
-            aria-pressed={smsAlertsOn}
-            onClick={() => setSmsAlertsOn((prev) => !prev)}
-          >
-            <Bell size={15} strokeWidth={2} />
-            <span>{t.smsAlertsLabel}</span>
-          </button>
+          <div className="case-summary-right">
+            <button
+              type="button"
+              className={`sms-alerts-btn ${smsAlertsOn ? 'is-on' : 'is-off'}`}
+              aria-pressed={smsAlertsOn}
+              onClick={handleToggleSms}
+            >
+              <Bell size={15} strokeWidth={2} />
+              <span>{t.smsAlertsLabel}</span>
+            </button>
+            {smsFeedback && (
+              <p className="sms-alerts-feedback" aria-live="polite">
+                {smsFeedback}
+              </p>
+            )}
+          </div>
         </section>
 
         {/* Bottom Two-Column Cards */}

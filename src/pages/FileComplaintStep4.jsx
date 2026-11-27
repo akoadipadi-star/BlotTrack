@@ -50,6 +50,11 @@ const PUROK_ZONES = [
   'Zone 7',
 ];
 
+function isValidPhMobile(rawValue) {
+  const compact = rawValue.replace(/[\s\-()]/g, '');
+  return /^(09\d{9}|\+639\d{9})$/.test(compact);
+}
+
 function FileComplaintStep4({ language = 'bikol' }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,15 +62,22 @@ function FileComplaintStep4({ language = 'bikol' }) {
     reportType = 'kp',
     complainantInfo = {},
     incidentData = {},
+    respondentData: savedRespondent,
   } = location.state || {};
 
   const [respondentData, setRespondentData] = useState({
-    name: '',
-    mobileNumber: '',
-    barangay: 'Abella',
-    purokZone: 'Zone 1',
-    addAnotherPerson: false,
+    name: savedRespondent?.name || '',
+    mobileNumber: savedRespondent?.mobileNumber || '',
+    barangay: NAGA_BARANGAYS.includes(savedRespondent?.barangay)
+      ? savedRespondent.barangay
+      : 'Abella',
+    purokZone: PUROK_ZONES.includes(savedRespondent?.purokZone)
+      ? savedRespondent.purokZone
+      : 'Zone 1',
+    addAnotherPerson: Boolean(savedRespondent?.addAnotherPerson),
   });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
     bikol: {
@@ -82,6 +94,14 @@ function FileComplaintStep4({ language = 'bikol' }) {
       purokLabel: 'Purok / Zone',
       addAnotherLabel: 'Magdagdag nin ibang tao',
       continueBtn: 'I-save asin magpadagos',
+      nameMin: 'Dai mababa sa 2 karakter an pangaran o deskripsyon.',
+      nameMax: 'Dai malampas sa 120 karakter an pangaran o deskripsyon.',
+      nameSameAsComplainant:
+        'An respondent dai pwedeng kapareho kan pangaran kan nagreklamo.',
+      mobileInvalid:
+        'Maglagay nin tamang PH mobile number (e.g. 0917 123 4567 o +639171234567), o i-blanko kun dai aram.',
+      barangayInvalid: 'Pumili nin tamang Barangay sa lista.',
+      purokInvalid: 'Pumili nin tamang Purok / Zone sa lista.',
     },
     en: {
       back: 'Back',
@@ -97,10 +117,18 @@ function FileComplaintStep4({ language = 'bikol' }) {
       purokLabel: 'Purok / Zone',
       addAnotherLabel: 'Add another person',
       continueBtn: 'Save and continue',
+      nameMin: 'Name or description must be at least 2 characters.',
+      nameMax: 'Name or description must not exceed 120 characters.',
+      nameSameAsComplainant:
+        'Respondent name cannot be the same as the complainant.',
+      mobileInvalid:
+        'Enter a valid Philippine mobile number (e.g. 0917 123 4567 or +639171234567), or leave blank if unknown.',
+      barangayInvalid: 'Please select a valid Barangay from the list.',
+      purokInvalid: 'Please select a valid Purok / Zone from the list.',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -108,13 +136,81 @@ function FileComplaintStep4({ language = 'bikol' }) {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    const nextErrors = {};
+    const trimmedName = respondentData.name.trim();
+    const complainantName = (complainantInfo.fullName || '').trim().toLowerCase();
+
+    if (trimmedName) {
+      if (trimmedName.length < 2) {
+        nextErrors.name = t.nameMin;
+      } else if (trimmedName.length > 120) {
+        nextErrors.name = t.nameMax;
+      } else if (
+        complainantName &&
+        trimmedName.toLowerCase() === complainantName
+      ) {
+        nextErrors.name = t.nameSameAsComplainant;
+      }
+    }
+
+    const trimmedMobile = respondentData.mobileNumber.trim();
+    if (trimmedMobile && !isValidPhMobile(trimmedMobile)) {
+      nextErrors.mobileNumber = t.mobileInvalid;
+    }
+
+    if (!NAGA_BARANGAYS.includes(respondentData.barangay)) {
+      nextErrors.barangay = t.barangayInvalid;
+    }
+
+    if (!PUROK_ZONES.includes(respondentData.purokZone)) {
+      nextErrors.purokZone = t.purokInvalid;
+    }
+
+    return nextErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+    setIsSubmitting(true);
+
+    const sanitizedRespondent = {
+      ...respondentData,
+      name: respondentData.name.trim(),
+      mobileNumber: respondentData.mobileNumber.trim(),
+    };
+
     navigate('/file-complaint/step-5', {
-      state: { reportType, complainantInfo, incidentData, respondentData },
+      state: {
+        ...(location.state || {}),
+        reportType,
+        complainantInfo,
+        incidentData,
+        respondentData: sanitizedRespondent,
+      },
     });
+  };
+
+  const backState = {
+    ...(location.state || {}),
+    reportType,
+    complainantInfo,
+    incidentData,
+    respondentData,
   };
 
   return (
@@ -122,7 +218,11 @@ function FileComplaintStep4({ language = 'bikol' }) {
       <div className="complaint-container">
         {/* Top Back Link */}
         <div className="complaint-back-row">
-          <Link to="/file-complaint/step-3" className="complaint-back-link">
+          <Link
+            to="/file-complaint/step-3"
+            state={backState}
+            className="complaint-back-link"
+          >
             <ArrowLeft size={15} strokeWidth={2.2} />
             <span>{t.back}</span>
           </Link>
@@ -141,7 +241,7 @@ function FileComplaintStep4({ language = 'bikol' }) {
         <ComplaintStepper currentStep={4} language={language} />
 
         {/* Main White Form Card */}
-        <form className="complaint-card" onSubmit={handleSubmit}>
+        <form className="complaint-card" onSubmit={handleSubmit} noValidate>
           {/* Card Header */}
           <div className="complaint-card-header">
             <div className="step-number-badge">4</div>
@@ -164,11 +264,25 @@ function FileComplaintStep4({ language = 'bikol' }) {
                 id="respondentName"
                 name="name"
                 type="text"
-                className="form-input"
+                maxLength={120}
+                className={`form-input ${errors.name ? 'is-invalid' : ''}`}
                 placeholder={t.namePlaceholder}
+                aria-invalid={Boolean(errors.name)}
+                aria-describedby={
+                  errors.name ? 'step4NameError' : undefined
+                }
                 value={respondentData.name}
                 onChange={handleChange}
               />
+              {errors.name && (
+                <p
+                  id="step4NameError"
+                  className="step4-error-text"
+                  role="alert"
+                >
+                  {errors.name}
+                </p>
+              )}
             </div>
 
             {/* Mobile number */}
@@ -180,11 +294,27 @@ function FileComplaintStep4({ language = 'bikol' }) {
                 id="respondentMobile"
                 name="mobileNumber"
                 type="tel"
-                className="form-input"
+                maxLength={20}
+                className={`form-input ${
+                  errors.mobileNumber ? 'is-invalid' : ''
+                }`}
                 placeholder={t.mobilePlaceholder}
+                aria-invalid={Boolean(errors.mobileNumber)}
+                aria-describedby={
+                  errors.mobileNumber ? 'step4MobileError' : undefined
+                }
                 value={respondentData.mobileNumber}
                 onChange={handleChange}
               />
+              {errors.mobileNumber && (
+                <p
+                  id="step4MobileError"
+                  className="step4-error-text"
+                  role="alert"
+                >
+                  {errors.mobileNumber}
+                </p>
+              )}
             </div>
 
             {/* Barangay */}
@@ -205,7 +335,13 @@ function FileComplaintStep4({ language = 'bikol' }) {
                 <select
                   id="respondentBarangay"
                   name="barangay"
-                  className="form-select"
+                  className={`form-select ${
+                    errors.barangay ? 'is-invalid' : ''
+                  }`}
+                  aria-invalid={Boolean(errors.barangay)}
+                  aria-describedby={
+                    errors.barangay ? 'step4BarangayError' : undefined
+                  }
                   value={respondentData.barangay}
                   onChange={handleChange}
                 >
@@ -222,6 +358,15 @@ function FileComplaintStep4({ language = 'bikol' }) {
                   aria-hidden="true"
                 />
               </div>
+              {errors.barangay && (
+                <p
+                  id="step4BarangayError"
+                  className="step4-error-text"
+                  role="alert"
+                >
+                  {errors.barangay}
+                </p>
+              )}
             </div>
 
             {/* Purok / Zone */}
@@ -242,7 +387,13 @@ function FileComplaintStep4({ language = 'bikol' }) {
                 <select
                   id="respondentPurok"
                   name="purokZone"
-                  className="form-select"
+                  className={`form-select ${
+                    errors.purokZone ? 'is-invalid' : ''
+                  }`}
+                  aria-invalid={Boolean(errors.purokZone)}
+                  aria-describedby={
+                    errors.purokZone ? 'step4PurokError' : undefined
+                  }
                   value={respondentData.purokZone}
                   onChange={handleChange}
                 >
@@ -259,6 +410,15 @@ function FileComplaintStep4({ language = 'bikol' }) {
                   aria-hidden="true"
                 />
               </div>
+              {errors.purokZone && (
+                <p
+                  id="step4PurokError"
+                  className="step4-error-text"
+                  role="alert"
+                >
+                  {errors.purokZone}
+                </p>
+              )}
             </div>
           </div>
 
@@ -279,11 +439,19 @@ function FileComplaintStep4({ language = 'bikol' }) {
 
           {/* Card Footer Action Buttons */}
           <div className="complaint-card-actions">
-            <Link to="/file-complaint/step-3" className="btn-cancel">
+            <Link
+              to="/file-complaint/step-3"
+              state={backState}
+              className="btn-cancel"
+            >
               {t.back}
             </Link>
 
-            <button type="submit" className="btn-continue">
+            <button
+              type="submit"
+              className="btn-continue"
+              disabled={isSubmitting}
+            >
               <span>{t.continueBtn}</span>
               <ArrowRight size={16} strokeWidth={2.2} />
             </button>

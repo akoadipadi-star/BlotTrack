@@ -4,12 +4,17 @@ import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
 import ComplaintStepper from '../components/ComplaintStepper';
 import './FileComplaintStep6.css';
 
+const ALLOWED_REPORT_TYPES = ['blotter', 'kp'];
+
 function FileComplaintStep6({ language = 'bikol' }) {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
+  const hasWizardState = Boolean(location.state);
 
-  const [isConfirmed, setIsConfirmed] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
     bikol: {
@@ -26,6 +31,13 @@ function FileComplaintStep6({ language = 'bikol' }) {
       editBtn: 'Edit',
       confirmLabel: 'Kinukumpirmar ko na tama an impormasyong itinao ko.',
       submitBtn: 'Ligtas na ipasa',
+      submittingBtn: 'Ipinapasa...',
+      confirmRequired:
+        'Markahan muna an kumpirmasyon na tama an gabos na impormasyon bago ipasa.',
+      incompleteWizard:
+        'May kulang na impormasyon sa naenot na mga hakbang. Pinduton an Edit tanganing kumpletuhon.',
+      unknownParty: 'Dai aram / Dai ipinagtao',
+      noEvidence: 'Mayo nin naka-attach na file',
     },
     en: {
       back: 'Back',
@@ -41,12 +53,18 @@ function FileComplaintStep6({ language = 'bikol' }) {
       editBtn: 'Edit',
       confirmLabel: 'I confirm that the information I provided is accurate.',
       submitBtn: 'Submit securely',
+      submittingBtn: 'Submitting...',
+      confirmRequired:
+        'Please check the confirmation box to verify that your information is accurate before submitting.',
+      incompleteWizard:
+        'Required information from earlier steps is missing. Click Edit on the incomplete section to complete it.',
+      unknownParty: 'Unknown / Not provided',
+      noEvidence: 'No files attached',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
 
-  // Build summary strings from wizard state, falling back to the exact Figma preview values
   const reportTypeSummary =
     state.reportType === 'kp'
       ? 'Katarungang Pambarangay • Reklamo para sa Pag-aayos'
@@ -58,7 +76,7 @@ function FileComplaintStep6({ language = 'bikol' }) {
       return [
         info.fullName || 'Juan Dela Cruz',
         info.mobileNumber || '0912 345 7821',
-        info.purokZone || 'Purok 4',
+        info.purokZone || 'Zone 1',
       ].join(' • ');
     }
     return 'Juan Dela Cruz • 0912 345 7821 • Purok 4';
@@ -77,16 +95,24 @@ function FileComplaintStep6({ language = 'bikol' }) {
 
   const respondentSummary = (() => {
     const resp = state.respondentData;
-    if (resp && resp.name) {
-      return [resp.name, resp.purokZone || 'Purok 4'].join(' • ');
+    if (hasWizardState && resp) {
+      return [
+        resp.name?.trim() || t.unknownParty,
+        resp.purokZone || 'Zone 1',
+      ].join(' • ');
     }
     return 'Pedro Santos • Purok 4';
   })();
 
   const evidenceSummary = (() => {
     const files = state.evidenceFiles;
-    if (Array.isArray(files) && files.length > 0) {
-      return `${files.length} ${files.length === 1 ? 'file' : 'files'} securely attached`;
+    if (Array.isArray(files)) {
+      if (files.length === 0 && hasWizardState) {
+        return t.noEvidence;
+      }
+      if (files.length > 0) {
+        return `${files.length} ${files.length === 1 ? 'file' : 'files'} securely attached`;
+      }
     }
     return '2 files securely attached';
   })();
@@ -119,9 +145,44 @@ function FileComplaintStep6({ language = 'bikol' }) {
     },
   ];
 
+  const validateBeforeSubmit = () => {
+    const nextErrors = {};
+
+    if (!isConfirmed) {
+      nextErrors.confirm = t.confirmRequired;
+    }
+
+    if (hasWizardState) {
+      const hasValidType = ALLOWED_REPORT_TYPES.includes(state.reportType);
+      const hasComplainant =
+        Boolean(state.complainantInfo?.fullName?.trim()) &&
+        Boolean(state.complainantInfo?.mobileNumber?.trim());
+      const hasIncident =
+        Boolean(state.incidentData?.caseType) &&
+        Boolean(state.incidentData?.incidentDate?.trim()) &&
+        Boolean(state.incidentData?.location?.trim()) &&
+        Boolean(state.incidentData?.narrative?.trim());
+
+      if (!hasValidType || !hasComplainant || !hasIncident) {
+        nextErrors.wizard = t.incompleteWizard;
+      }
+    }
+
+    return nextErrors;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isConfirmed) return;
+    if (isSubmitting) return;
+
+    const validationErrors = validateBeforeSubmit();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+    setIsSubmitting(true);
     navigate('/file-complaint/submitted', { state });
   };
 
@@ -153,7 +214,7 @@ function FileComplaintStep6({ language = 'bikol' }) {
         <ComplaintStepper currentStep={6} language={language} />
 
         {/* Main White Form Card */}
-        <form className="complaint-card" onSubmit={handleSubmit}>
+        <form className="complaint-card" onSubmit={handleSubmit} noValidate>
           {/* Card Header */}
           <div className="complaint-card-header">
             <div className="step-number-badge">6</div>
@@ -184,17 +245,47 @@ function FileComplaintStep6({ language = 'bikol' }) {
             ))}
           </div>
 
+          {errors.wizard && (
+            <p className="step6-error-text" role="alert">
+              {errors.wizard}
+            </p>
+          )}
+
           {/* Confirmation Checkbox */}
-          <label className="step6-confirm-row" htmlFor="confirmAccuracy">
+          <label
+            className={`step6-confirm-row ${
+              errors.confirm ? 'is-invalid' : ''
+            }`}
+            htmlFor="confirmAccuracy"
+          >
             <input
               id="confirmAccuracy"
               type="checkbox"
               className="step6-confirm-checkbox"
+              aria-invalid={Boolean(errors.confirm)}
+              aria-describedby={
+                errors.confirm ? 'step6ConfirmError' : undefined
+              }
               checked={isConfirmed}
-              onChange={(e) => setIsConfirmed(e.target.checked)}
+              onChange={(e) => {
+                setIsConfirmed(e.target.checked);
+                if (errors.confirm) {
+                  setErrors((prev) => ({ ...prev, confirm: undefined }));
+                }
+              }}
             />
             <span className="step6-confirm-label">{t.confirmLabel}</span>
           </label>
+
+          {errors.confirm && (
+            <p
+              id="step6ConfirmError"
+              className="step6-error-text"
+              role="alert"
+            >
+              {errors.confirm}
+            </p>
+          )}
 
           <hr className="complaint-divider step6-divider--bottom" />
 
@@ -211,9 +302,9 @@ function FileComplaintStep6({ language = 'bikol' }) {
             <button
               type="submit"
               className="btn-continue"
-              disabled={!isConfirmed}
+              disabled={isSubmitting}
             >
-              <span>{t.submitBtn}</span>
+              <span>{isSubmitting ? t.submittingBtn : t.submitBtn}</span>
               <ArrowRight size={16} strokeWidth={2.2} />
             </button>
           </div>

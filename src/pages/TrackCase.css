@@ -197,3 +197,29 @@
     padding: 28px 20px 24px;
   }
 }
+
+.track-input.is-invalid,
+.track-select.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.track-input.is-invalid:focus,
+.track-select.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.track-error-text {
+  margin-top: 5px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.track-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   Search,
@@ -8,8 +8,10 @@ import {
   Clock,
   FileText,
   FileCheck2,
+  Plus,
 } from 'lucide-react';
 import LuponLayout from '../components/LuponLayout';
+import NewCaseModal from '../components/NewCaseModal';
 import './LuponAllCases.css';
 
 const INITIAL_CASES = [
@@ -73,14 +75,42 @@ const INITIAL_CASES = [
 
 function LuponAllCases({ language = 'bikol', onLanguageChange }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [cases, setCases] = useState(INITIAL_CASES);
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [natureFilter, setNatureFilter] = useState('all');
+  const [isNewCaseOpen, setIsNewCaseOpen] = useState(false);
+
+  useEffect(() => {
+    const incomingCase = location.state?.createdCase;
+    if (!incomingCase) return;
+
+    setCases((prev) => {
+      if (prev.some((c) => c.id === incomingCase.id)) return prev;
+      return [
+        {
+          id: incomingCase.id,
+          parties: incomingCase.parties,
+          type: 'KP CASE',
+          typeKey: 'kp',
+          nature: incomingCase.nature,
+          isWeekend: false,
+          isPriority: true,
+          submitted: 'Just now',
+          targetLabel: '15 days left',
+          targetTone: 'green',
+          targetIcon: 'clock',
+          canConvertToKp: false,
+        },
+        ...prev,
+      ];
+    });
+  }, [location.state]);
 
   const tabs = [
-    { key: 'all', label: 'Lahat', count: 12 },
+    { key: 'all', label: 'Lahat', count: cases.length + 8 },
     { key: 'blotter', label: 'Blotter' },
     { key: 'kp', label: 'KP Cases' },
     { key: 'priority', label: 'Priority' },
@@ -104,6 +134,26 @@ function LuponAllCases({ language = 'bikol', onLanguageChange }) {
       return true;
     });
   }, [cases, activeTab, natureFilter, searchQuery]);
+
+  const handleCreateCase = (newRecord) => {
+    setCases((prev) => [
+      {
+        id: newRecord.id,
+        parties: newRecord.parties,
+        type: 'KP CASE',
+        typeKey: 'kp',
+        nature: newRecord.nature,
+        isWeekend: false,
+        isPriority: true,
+        submitted: 'Just now',
+        targetLabel: '15 days left',
+        targetTone: 'green',
+        targetIcon: 'clock',
+        canConvertToKp: false,
+      },
+      ...prev,
+    ]);
+  };
 
   const handleConvertToKp = (e, caseId) => {
     e.stopPropagation();
@@ -139,11 +189,26 @@ function LuponAllCases({ language = 'bikol', onLanguageChange }) {
       }
     >
       <div className="all-cases-container">
-        {/* Top Date & Page Heading */}
-        <header className="all-cases-header">
-          <p className="all-cases-eyebrow">MARTES, NOBYEMBRE 3, 2026</p>
-          <h1 className="all-cases-title">Gabos na kaso</h1>
-          <p className="all-cases-subtitle">Lista kan blotter asin KP case.</p>
+        {/* Top Date, Page Heading & Encode New Case CTA */}
+        <header className="all-cases-header all-cases-header-row">
+          <div>
+            <p className="all-cases-eyebrow">MARTES, NOBYEMBRE 3, 2026</p>
+            <h1 className="all-cases-title">Gabos na kaso</h1>
+            <p className="all-cases-subtitle">Lista kan blotter asin KP case.</p>
+          </div>
+
+          <button
+            type="button"
+            className="all-cases-encode-btn"
+            onClick={() => setIsNewCaseOpen(true)}
+          >
+            <Plus size={16} strokeWidth={2.4} />
+            <span>
+              {language === 'en'
+                ? 'Encode New Case'
+                : 'Mag-encode nin bagong kaso'}
+            </span>
+          </button>
         </header>
 
         {/* Weekend Priority Alert Banner */}
@@ -326,7 +391,7 @@ function LuponAllCases({ language = 'bikol', onLanguageChange }) {
           {/* Pagination Footer */}
           <div className="cases-pagination-bar">
             <span className="cases-showing-text">
-              Showing 1–{filteredCases.length} of 12 cases
+              Showing 1–{filteredCases.length} of {cases.length + 8} cases
             </span>
 
             <div className="cases-page-controls">
@@ -340,6 +405,14 @@ function LuponAllCases({ language = 'bikol', onLanguageChange }) {
           </div>
         </section>
       </div>
+
+      {/* Add New Case Record Modal */}
+      <NewCaseModal
+        isOpen={isNewCaseOpen}
+        onClose={() => setIsNewCaseOpen(false)}
+        onSubmitCase={handleCreateCase}
+        language={language}
+      />
     </LuponLayout>
   );
 }

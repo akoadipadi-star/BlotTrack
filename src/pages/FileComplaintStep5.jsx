@@ -11,6 +11,16 @@ import {
 import ComplaintStepper from '../components/ComplaintStepper';
 import './FileComplaintStep5.css';
 
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.pdf'];
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_FILES_COUNT = 5;
+
+function hasAllowedExtension(fileName) {
+  const lower = fileName.toLowerCase();
+  return ALLOWED_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
 function FileComplaintStep5({ language = 'bikol' }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,10 +31,15 @@ function FileComplaintStep5({ language = 'bikol' }) {
     complainantInfo = {},
     incidentData = {},
     respondentData = {},
+    evidenceFiles: savedEvidence = [],
   } = location.state || {};
 
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(
+    Array.isArray(savedEvidence) ? savedEvidence : []
+  );
   const [isDragging, setIsDragging] = useState(false);
+  const [fileError, setFileError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
     bikol: {
@@ -39,6 +54,14 @@ function FileComplaintStep5({ language = 'bikol' }) {
       greenTitle: 'Encrypted asin pribado',
       greenSub: 'Authorized staff sana an makakahiling kan files.',
       continueBtn: 'I-save asin magpadagos',
+      errorInvalidType:
+        'JPG, PNG, o PDF na file sana an pwede i-upload.',
+      errorEmptyFile:
+        'May piniling file na mayo nin laog (0 KB). Pumili nin tamang file.',
+      errorTooLarge:
+        'An file dai dapat maglampas sa 10 MB bawat saro.',
+      errorMaxCount: `Hanggang ${MAX_FILES_COUNT} na file sana an pwede i-upload.`,
+      errorDuplicate: 'Naka-upload na an file na ini.',
     },
     en: {
       back: 'Back',
@@ -52,18 +75,71 @@ function FileComplaintStep5({ language = 'bikol' }) {
       greenTitle: 'Encrypted and private',
       greenSub: 'Only authorized staff can view the files.',
       continueBtn: 'Save and continue',
+      errorInvalidType:
+        'Only JPG, PNG, or PDF files are allowed.',
+      errorEmptyFile:
+        'One or more selected files are empty (0 KB). Please choose a valid file.',
+      errorTooLarge:
+        'Each file must not exceed 10 MB.',
+      errorMaxCount: `You can upload up to ${MAX_FILES_COUNT} files only.`,
+      errorDuplicate: 'This file has already been added.',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
 
   const handleFilesAdded = (selectedFileList) => {
-    const validFiles = Array.from(selectedFileList).filter(
-      (file) => file.size <= 10 * 1024 * 1024
-    );
-    if (validFiles.length > 0) {
-      setFiles((prev) => [...prev, ...validFiles]);
+    const incoming = Array.from(selectedFileList || []);
+    if (incoming.length === 0) return;
+
+    const accepted = [];
+    let rejectionMessage = '';
+
+    for (const file of incoming) {
+      if (files.length + accepted.length >= MAX_FILES_COUNT) {
+        rejectionMessage = t.errorMaxCount;
+        break;
+      }
+
+      const validType =
+        ALLOWED_MIME_TYPES.includes(file.type) ||
+        hasAllowedExtension(file.name);
+
+      if (!validType) {
+        rejectionMessage = t.errorInvalidType;
+        continue;
+      }
+
+      if (file.size <= 0) {
+        rejectionMessage = t.errorEmptyFile;
+        continue;
+      }
+
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        rejectionMessage = t.errorTooLarge;
+        continue;
+      }
+
+      const isDuplicate = [...files, ...accepted].some(
+        (existing) =>
+          existing.name === file.name && existing.size === file.size
+      );
+      if (isDuplicate) {
+        rejectionMessage = t.errorDuplicate;
+        continue;
+      }
+
+      accepted.push({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      });
     }
+
+    if (accepted.length > 0) {
+      setFiles((prev) => [...prev, ...accepted]);
+    }
+    setFileError(rejectionMessage);
   };
 
   const handleFileChange = (e) => {
@@ -83,12 +159,17 @@ function FileComplaintStep5({ language = 'bikol' }) {
 
   const handleRemoveFile = (indexToRemove) => {
     setFiles((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+    if (fileError) setFileError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     navigate('/file-complaint/step-6', {
       state: {
+        ...(location.state || {}),
         reportType,
         complainantInfo,
         incidentData,
@@ -98,12 +179,25 @@ function FileComplaintStep5({ language = 'bikol' }) {
     });
   };
 
+  const backState = {
+    ...(location.state || {}),
+    reportType,
+    complainantInfo,
+    incidentData,
+    respondentData,
+    evidenceFiles: files,
+  };
+
   return (
     <main className="complaint-page">
       <div className="complaint-container">
         {/* Top Back Link */}
         <div className="complaint-back-row">
-          <Link to="/file-complaint/step-4" className="complaint-back-link">
+          <Link
+            to="/file-complaint/step-4"
+            state={backState}
+            className="complaint-back-link"
+          >
             <ArrowLeft size={15} strokeWidth={2.2} />
             <span>{t.back}</span>
           </Link>
@@ -122,7 +216,7 @@ function FileComplaintStep5({ language = 'bikol' }) {
         <ComplaintStepper currentStep={5} language={language} />
 
         {/* Main White Form Card */}
-        <form className="complaint-card" onSubmit={handleSubmit}>
+        <form className="complaint-card" onSubmit={handleSubmit} noValidate>
           {/* Card Header */}
           <div className="complaint-card-header">
             <div className="step-number-badge">5</div>
@@ -138,7 +232,11 @@ function FileComplaintStep5({ language = 'bikol' }) {
           <div
             role="button"
             tabIndex={0}
-            className={`evidence-dropzone ${isDragging ? 'is-dragging' : ''}`}
+            aria-invalid={Boolean(fileError)}
+            aria-describedby={fileError ? 'step5FileError' : undefined}
+            className={`evidence-dropzone ${isDragging ? 'is-dragging' : ''} ${
+              fileError ? 'is-invalid' : ''
+            }`}
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -172,6 +270,16 @@ function FileComplaintStep5({ language = 'bikol' }) {
             <p className="evidence-upload-browse">{t.uploadBrowse}</p>
             <p className="evidence-upload-hint">{t.uploadHint}</p>
           </div>
+
+          {fileError && (
+            <p
+              id="step5FileError"
+              className="step5-error-text"
+              role="alert"
+            >
+              {fileError}
+            </p>
+          )}
 
           {/* Selected Files List (appears only if user uploads files) */}
           {files.length > 0 && (
@@ -216,11 +324,19 @@ function FileComplaintStep5({ language = 'bikol' }) {
 
           {/* Card Footer Action Buttons */}
           <div className="complaint-card-actions">
-            <Link to="/file-complaint/step-4" className="btn-cancel">
+            <Link
+              to="/file-complaint/step-4"
+              state={backState}
+              className="btn-cancel"
+            >
               {t.back}
             </Link>
 
-            <button type="submit" className="btn-continue">
+            <button
+              type="submit"
+              className="btn-continue"
+              disabled={isSubmitting}
+            >
               <span>{t.continueBtn}</span>
               <ArrowRight size={16} strokeWidth={2.2} />
             </button>
@@ -231,4 +347,4 @@ function FileComplaintStep5({ language = 'bikol' }) {
   );
 }
 
-export default FileComplaintStep5;
+export default FileComplaintStep5;  

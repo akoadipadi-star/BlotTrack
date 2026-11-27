@@ -57,3 +57,57 @@
   letter-spacing: 0.03em;
   color: #0f2c59;
 }
+
+.lupon-reg-warning-banner {
+  background-color: #fef6ee;
+  border: 1px solid #f7d9bc;
+  border-radius: 9px;
+  padding: 9px 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: #9a4a1c;
+  text-align: left;
+}
+
+.lupon-reg-warning-banner svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.lupon-reg-warning-link {
+  font-weight: 700;
+  color: #164e87;
+  text-decoration: underline;
+}
+
+.lupon-request-code-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.lupon-request-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 6px;
+  border: 1px solid #d4dfec;
+  background-color: #ffffff;
+  color: #164e87;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.lupon-request-copy-btn:hover {
+  background-color: #eef5fc;
+  border-color: #bfd3ea;
+}

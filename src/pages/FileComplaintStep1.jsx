@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,10 +12,21 @@ import {
 import ComplaintStepper from '../components/ComplaintStepper';
 import './FileComplaintStep1.css';
 
+const ALLOWED_REPORT_TYPES = ['blotter', 'kp'];
+
 function FileComplaintStep1({ language = 'bikol' }) {
   const navigate = useNavigate();
-  // Default to 'blotter' as selected in STEP 1.png
-  const [selectedType, setSelectedType] = useState('blotter');
+  const location = useLocation();
+
+  const initialType = ALLOWED_REPORT_TYPES.includes(
+    location.state?.reportType
+  )
+    ? location.state.reportType
+    : 'blotter';
+
+  const [selectedType, setSelectedType] = useState(initialType);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
     bikol: {
@@ -51,6 +62,8 @@ function FileComplaintStep1({ language = 'bikol' }) {
         'Pili-on an pinakaharani. Pwede ining itama kan Secretary pagkatapos nin review.',
       cancelBtn: 'Kanselahon',
       continueBtn: 'I-save asin magpadagos',
+      selectionError:
+        'Pumili muna kun Barangay Blotter o Katarungang Pambarangay bago magpadagos.',
     },
     en: {
       back: 'Back',
@@ -85,13 +98,34 @@ function FileComplaintStep1({ language = 'bikol' }) {
         'Choose the closest option. The Secretary can correct this after review.',
       cancelBtn: 'Cancel',
       continueBtn: 'Save and continue',
+      selectionError:
+        'Please select either Barangay Blotter or Katarungang Pambarangay before continuing.',
     },
   };
 
-  const t = content[language] || content.bikol;
+  const t = content[language === 'en' ? 'en' : 'bikol'];
+
+  const handleSelectType = (type) => {
+    setSelectedType(type);
+    if (error) setError('');
+  };
 
   const handleContinue = () => {
-    navigate('/file-complaint/step-2', { state: { reportType: selectedType } });
+    if (isSubmitting) return;
+
+    if (!ALLOWED_REPORT_TYPES.includes(selectedType)) {
+      setError(t.selectionError);
+      return;
+    }
+
+    setError('');
+    setIsSubmitting(true);
+    navigate('/file-complaint/step-2', {
+      state: {
+        ...(location.state || {}),
+        reportType: selectedType,
+      },
+    });
   };
 
   return (
@@ -131,7 +165,11 @@ function FileComplaintStep1({ language = 'bikol' }) {
           <hr className="complaint-divider" />
 
           {/* Two Selection Cards */}
-          <div className="report-type-grid" role="radiogroup" aria-label={t.stepHeading}>
+          <div
+            className="report-type-grid"
+            role="radiogroup"
+            aria-label={t.stepHeading}
+          >
             {/* Option 1: Barangay Blotter */}
             <button
               type="button"
@@ -140,7 +178,7 @@ function FileComplaintStep1({ language = 'bikol' }) {
               className={`report-type-card ${
                 selectedType === 'blotter' ? 'is-selected' : ''
               }`}
-              onClick={() => setSelectedType('blotter')}
+              onClick={() => handleSelectType('blotter')}
             >
               <div className="report-type-top">
                 <div className="report-icon-box report-icon-box--blotter">
@@ -184,7 +222,7 @@ function FileComplaintStep1({ language = 'bikol' }) {
               className={`report-type-card ${
                 selectedType === 'kp' ? 'is-selected' : ''
               }`}
-              onClick={() => setSelectedType('kp')}
+              onClick={() => handleSelectType('kp')}
             >
               <div className="report-type-top">
                 <div className="report-icon-box report-icon-box--kp">
@@ -219,6 +257,12 @@ function FileComplaintStep1({ language = 'bikol' }) {
             </button>
           </div>
 
+          {error && (
+            <p className="step1-error-text" role="alert">
+              {error}
+            </p>
+          )}
+
           {/* Unsure Helper Banner */}
           <div className="unsure-banner">
             <HelpCircle size={16} strokeWidth={2} className="unsure-icon" />
@@ -238,6 +282,7 @@ function FileComplaintStep1({ language = 'bikol' }) {
             <button
               type="button"
               className="btn-continue"
+              disabled={isSubmitting}
               onClick={handleContinue}
             >
               <span>{t.continueBtn}</span>

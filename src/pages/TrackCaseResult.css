@@ -327,3 +327,43 @@
     padding: 22px 20px;
   }
 }
+
+.track-result-warning-banner {
+  background-color: #fef6ee;
+  border: 1px solid #f7d9bc;
+  border-radius: 10px;
+  padding: 11px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.72rem;
+  color: #9a4a1c;
+}
+
+.track-result-warning-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-result-warning-link {
+  font-weight: 700;
+  color: #164e87;
+  white-space: nowrap;
+  text-decoration: underline;
+}
+
+.case-summary-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.sms-alerts-feedback {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #158051;
+}

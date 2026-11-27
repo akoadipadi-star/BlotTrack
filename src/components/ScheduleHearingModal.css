@@ -309,3 +309,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.sched-input.is-invalid,
+.sched-select.is-invalid {
+  border-color: #dc2626;
+  background-color: #fffafa;
+}
+
+.sched-input.is-invalid:focus,
+.sched-select.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.sched-error-text {
+  margin-top: 6px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.35;
+}
+
+.sched-confirm-btn:disabled,
+.sched-cancel-btn:disabled,
+.sched-modal-close-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
